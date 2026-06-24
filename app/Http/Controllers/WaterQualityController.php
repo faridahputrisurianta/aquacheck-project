@@ -23,10 +23,10 @@ class WaterQualityController extends Controller
         $request->validate([
             'lokasi' => 'required',
             'ph' => 'required|numeric|min:0|max:14',
-            'suhu' => 'required|numeric|min:0',
-            'turbidity' => 'required|numeric|min:0',
-            'tds' => 'required|numeric|min:0',
-            'do_level' => 'required|numeric|min:0',
+            'suhu' => 'required|numeric',
+            'turbidity' => 'required|numeric',
+            'tds' => 'required|numeric',
+            'do_level' => 'required|numeric',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'tanggal' => 'required'
@@ -51,7 +51,8 @@ class WaterQualityController extends Controller
             'tanggal' => $request->tanggal,
         ]);
 
-        return redirect()->route('water-quality.index');
+        return redirect()->route('water-quality.index')
+            ->with('success', 'Data berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -63,6 +64,18 @@ class WaterQualityController extends Controller
     public function update(Request $request, $id)
     {
         $data = WaterQuality::findOrFail($id);
+
+        $request->validate([
+            'lokasi' => 'required',
+            'ph' => 'required|numeric|min:0|max:14',
+            'suhu' => 'required|numeric',
+            'turbidity' => 'required|numeric',
+            'tds' => 'required|numeric',
+            'do_level' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'tanggal' => 'nullable'
+        ]);
 
         $status = $this->hitungStatus(
             $request->ph,
@@ -80,10 +93,11 @@ class WaterQualityController extends Controller
             'status' => $status,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
-            'tanggal' => $request->tanggal,
+            'tanggal' => $request->tanggal ?? $data->tanggal,
         ]);
 
-        return redirect()->route('water-quality.index');
+        return redirect()->route('water-quality.index')
+            ->with('success', 'Data berhasil diupdate');
     }
 
     public function destroy($id)
@@ -91,7 +105,8 @@ class WaterQualityController extends Controller
         $data = WaterQuality::findOrFail($id);
         $data->delete();
 
-        return redirect()->route('water-quality.index');
+        return redirect()->route('water-quality.index')
+            ->with('success', 'Data berhasil dihapus');
     }
 
     private function hitungStatus($ph, $tds, $do)
