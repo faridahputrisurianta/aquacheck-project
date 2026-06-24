@@ -34,6 +34,7 @@ class ReportController extends Controller
         }
 
         Report::create([
+            'nama' => $request->nama ?? 'Anonim',
             'jenis_laporan' => $request->jenis_laporan,
             'deskripsi' => $request->deskripsi,
             'foto' => $foto,
